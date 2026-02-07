@@ -1,0 +1,16 @@
+# config/config.yaml
+server:
+  port: "8080"
+  host: "0.0.0.0"
+
+database:
+  host: "localhost"  # вместо "postgres"
+  port: 5432
+  user: "postgres"
+  password: "password"
+  dbname: "subscriptions"
+  sslmode: "disable"
+
+logging:
+  level: "info"
+  format: "json"
