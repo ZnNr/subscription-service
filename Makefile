@@ -55,6 +55,14 @@ test-integration:
 	@echo "Note: These tests require running PostgreSQL"
 	@go test ./... -tags=integration -v
 
+test-quick:
+	@echo "Быстрый тест API..."
+	@powershell -File quick-test.ps1
+
+# Запуск всех тестов
+test-all: test test-api
+	@echo "Все тесты пройдены! ✅"
+
 # Форматирование
 fmt:
 	@echo "Formatting code..."
