@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/ZnNr/subscription-service/internal/model"
 	"github.com/google/uuid"
-
 	"time"
 )
 

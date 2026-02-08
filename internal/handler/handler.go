@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
+	"regexp"
+	"strconv"
 	"time"
 )
 
@@ -226,6 +228,26 @@ func (h *Handler) CalculateSummary(c *gin.Context) {
 	c.JSON(http.StatusOK, summary)
 }
 
+// ValidateMonthYear проверяет формат "MM-YYYY"
+func ValidateMonthYear(dateStr string) bool {
+	// Регулярное выражение для формата MM-YYYY
+	re := regexp.MustCompile(`^(0[1-9]|1[0-2])-(\d{4})$`)
+	return re.MatchString(dateStr)
+}
+
+// parseMonthYear парсит строку в формате "MM-YYYY" в time.Time
 func parseMonthYear(dateStr string) (time.Time, error) {
-	return time.Parse("01-2006", dateStr)
+	if !ValidateMonthYear(dateStr) {
+		return time.Time{}, &time.ParseError{
+			Value:   dateStr,
+			Message: "invalid format, expected MM-YYYY",
+		}
+	}
+
+	// Парсим месяц и год
+	month, _ := strconv.Atoi(dateStr[0:2])
+	year, _ := strconv.Atoi(dateStr[3:7])
+
+	// Создаем дату (первое число месяца)
+	return time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC), nil
 }

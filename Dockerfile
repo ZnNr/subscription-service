@@ -1,4 +1,5 @@
-FROM golang:1.21-alpine AS builder
+# Создайте файл Dockerfile
+FROM golang:1.25.7-alpine AS builder
 
 WORKDIR /app
 
@@ -9,13 +10,12 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd/server
 
 FROM alpine:latest
-
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
 COPY --from=builder /app/main .
-COPY config/config.yaml ./config/config.yaml
+COPY config/config.yaml ./config/
 
 EXPOSE 8080
 

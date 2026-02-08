@@ -10,10 +10,10 @@ package main
 
 import (
 	"context"
+	"github.com/ZnNr/subscription-service/docs"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	"github.com/ZnNr/subscription-service/docs" // <-- новый импорт
 	"github.com/ZnNr/subscription-service/internal/config"
 	"github.com/ZnNr/subscription-service/internal/handler"
 	"github.com/ZnNr/subscription-service/internal/repository"
@@ -28,8 +28,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -65,7 +63,6 @@ func main() {
 	router.Use(logger.GinLogger())
 
 	// Настраиваем Swagger
-	// Настройка Swagger
 	docs.SwaggerInfo.Title = "Subscription Service API"
 	docs.SwaggerInfo.Description = "REST API for managing user subscriptions"
 	docs.SwaggerInfo.Version = "1.0"
