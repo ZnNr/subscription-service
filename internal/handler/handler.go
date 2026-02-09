@@ -235,7 +235,7 @@ func ValidateMonthYear(dateStr string) bool {
 	return re.MatchString(dateStr)
 }
 
-// parseMonthYear парсит строку в формате "MM-YYYY" в time.Time
+// parseMonthYear
 func parseMonthYear(dateStr string) (time.Time, error) {
 	if !ValidateMonthYear(dateStr) {
 		return time.Time{}, &time.ParseError{
@@ -244,10 +244,8 @@ func parseMonthYear(dateStr string) (time.Time, error) {
 		}
 	}
 
-	// Парсим месяц и год
 	month, _ := strconv.Atoi(dateStr[0:2])
 	year, _ := strconv.Atoi(dateStr[3:7])
 
-	// Создаем дату (первое число месяца)
 	return time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC), nil
 }

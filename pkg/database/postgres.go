@@ -36,7 +36,7 @@ func ConnectPostgres(cfg config.DatabaseConfig) (*sql.DB, error) {
 	return db, nil
 }
 
-// RunMigrations выполняет миграции базы данных
+// RunMigrations выполняет миграции базы данных (создает таблицу при запуске приложения)
 func RunMigrations(db *sql.DB) error {
 	migrations := []string{
 		// Миграция 1: Создание таблицы subscriptions

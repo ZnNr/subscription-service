@@ -64,7 +64,6 @@ func (m *MockService) CalculateSummary(ctx context.Context, startDate, endDate t
 	return args.Get(0).(*model.SummaryResponse), args.Error(1)
 }
 
-// Проверяем, что MockService реализует интерфейс
 var _ service.Service = (*MockService)(nil)
 
 func setupTestRouter(handler *Handler) *gin.Engine {
@@ -111,7 +110,6 @@ func TestCreateSubscriptionHandler(t *testing.T) {
 		UpdatedAt:   time.Now().UTC(),
 	}
 
-	// Используем mock.Anything для context.Context
 	mockService.On("CreateSubscription", mock.Anything, mock.AnythingOfType("*model.Subscription")).
 		Return(expectedSub, nil)
 
@@ -147,7 +145,6 @@ func TestGetSubscriptionHandler(t *testing.T) {
 		StartDate:   time.Now().UTC(),
 	}
 
-	// Используем mock.Anything для context.Context (а не *gin.Context)
 	mockService.On("GetSubscription", mock.Anything, subID).
 		Return(expectedSub, nil)
 
@@ -190,21 +187,17 @@ func TestListSubscriptionsHandler(t *testing.T) {
 		},
 	}
 
-	// Используем mock.Anything для context.Context и правильные типы для параметров
 	mockService.On("ListSubscriptions",
 		mock.Anything, // context.Context
 		&userID,       // *uuid.UUID
 		mock.MatchedBy(func(s *string) bool { return s == nil }), // *string (nil)
 	).Return(expectedSubs, nil)
 
-	// Создаем запрос с query параметром
 	req, _ := http.NewRequest("GET", "/api/v1/subscriptions?user_id="+userID.String(), nil)
 
-	// Выполняем запрос
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
-	// Проверяем
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var response []model.Subscription
@@ -222,7 +215,6 @@ func TestCalculateSummaryHandler(t *testing.T) {
 
 	userID := uuid.MustParse("11111111-1111-1111-1111-111111111111")
 
-	// Тело запроса
 	requestBody := map[string]interface{}{
 		"start_date": "01-2025",
 		"end_date":   "12-2025", // Это парсится как 1 декабря 2025!
@@ -234,9 +226,6 @@ func TestCalculateSummaryHandler(t *testing.T) {
 		Count:       3,
 	}
 
-	// ПРАВИЛЬНЫЕ ДАТЫ для мока:
-	// "01-2025" → 1 января 2025
-	// "12-2025" → 1 декабря 2025 (а не 31 декабря!)
 	startDate := time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
 	endDate := time.Date(2025, 12, 1, 0, 0, 0, 0, time.UTC) // 1 декабря, а не 31!
 
@@ -249,16 +238,13 @@ func TestCalculateSummaryHandler(t *testing.T) {
 		(*string)(nil),
 	).Return(expectedSummary, nil)
 
-	// Создаем запрос
 	jsonBody, _ := json.Marshal(requestBody)
 	req, _ := http.NewRequest("POST", "/api/v1/subscriptions/summary", bytes.NewBuffer(jsonBody))
 	req.Header.Set("Content-Type", "application/json")
 
-	// Выполняем запрос
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
-	// Проверяем
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var response model.SummaryResponse
@@ -281,19 +267,16 @@ func TestUpdateSubscriptionHandler(t *testing.T) {
 		"price": 699,
 	}
 
-	// Используем mock.Anything для context.Context (вместо *gin.Context)
 	mockService.On("UpdateSubscription",
 		mock.Anything, // context.Context
 		subID,
 		mock.AnythingOfType("*model.UpdateSubscriptionRequest"),
 	).Return(nil)
 
-	// Создаем запрос
 	jsonBody, _ := json.Marshal(requestBody)
 	req, _ := http.NewRequest("PUT", "/api/v1/subscriptions/"+subID.String(), bytes.NewBuffer(jsonBody))
 	req.Header.Set("Content-Type", "application/json")
 
-	// Выполняем запрос
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
@@ -309,20 +292,16 @@ func TestDeleteSubscriptionHandler(t *testing.T) {
 
 	subID := uuid.New()
 
-	// Используем mock.Anything для context.Context
 	mockService.On("DeleteSubscription",
 		mock.Anything, // context.Context вместо *gin.Context
 		subID,
 	).Return(nil)
 
-	// Создаем запрос
 	req, _ := http.NewRequest("DELETE", "/api/v1/subscriptions/"+subID.String(), nil)
 
-	// Выполняем запрос
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
-	// Проверяем
 	assert.Equal(t, http.StatusNoContent, w.Code)
 	mockService.AssertExpectations(t)
 }

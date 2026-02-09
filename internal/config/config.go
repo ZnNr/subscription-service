@@ -35,12 +35,10 @@ type LoggingConfig struct {
 }
 
 func LoadConfig() (*Config, error) {
-	// Загружаем .env файл если существует
 	if err := godotenv.Load(); err != nil && !os.IsNotExist(err) {
 		return nil, err
 	}
 
-	// Читаем конфигурационный файл
 	data, err := os.ReadFile("config/config.yaml")
 	if err != nil {
 		// Если файла нет, создаем конфигурацию из переменных окружения
@@ -52,7 +50,6 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 
-	// Переопределяем значения переменными окружения
 	overrideFromEnv(&cfg)
 
 	return &cfg, nil

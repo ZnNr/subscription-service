@@ -1,4 +1,3 @@
-# Создайте файл Dockerfile
 FROM golang:1.25.7-alpine AS builder
 
 WORKDIR /app

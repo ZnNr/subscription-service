@@ -46,7 +46,6 @@ func (s *PostgresRepositoryTestSuite) TestCreateSubscription() {
 		UpdatedAt:   time.Now().UTC(),
 	}
 
-	// Ожидаем SQL запрос
 	s.mock.ExpectExec(`INSERT INTO subscriptions`).
 		WithArgs(
 			sub.ID, sub.ServiceName, sub.Price, sub.UserID,
@@ -54,10 +53,8 @@ func (s *PostgresRepositoryTestSuite) TestCreateSubscription() {
 		).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
-	// Вызываем метод
 	err := s.repo.CreateSubscription(s.ctx, sub)
 
-	// Проверяем
 	assert.NoError(s.T(), err)
 	assert.NoError(s.T(), s.mock.ExpectationsWereMet())
 }
@@ -75,7 +72,6 @@ func (s *PostgresRepositoryTestSuite) TestGetSubscription() {
 		UpdatedAt:   time.Now().UTC(),
 	}
 
-	// Ожидаем SQL запрос
 	rows := sqlmock.NewRows([]string{
 		"id", "service_name", "price", "user_id",
 		"start_date", "end_date", "created_at", "updated_at",
@@ -88,10 +84,8 @@ func (s *PostgresRepositoryTestSuite) TestGetSubscription() {
 		WithArgs(subID).
 		WillReturnRows(rows)
 
-	// Вызываем метод
 	result, err := s.repo.GetSubscription(s.ctx, subID)
 
-	// Проверяем
 	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), expectedSub.ID, result.ID)
 	assert.Equal(s.T(), expectedSub.ServiceName, result.ServiceName)
@@ -111,7 +105,6 @@ func (s *PostgresRepositoryTestSuite) TestGetSubscription_NotFound() {
 
 	result, err := s.repo.GetSubscription(s.ctx, subID)
 
-	// Просто проверяем что есть ошибка, без проверки текста
 	assert.Error(s.T(), err)
 	assert.Nil(s.T(), result)
 
@@ -125,15 +118,12 @@ func (s *PostgresRepositoryTestSuite) TestUpdateSubscription() {
 		ServiceName: &[]string{"Netflix Premium"}[0],
 	}
 
-	// Ожидаем SQL запрос
 	s.mock.ExpectExec(`UPDATE subscriptions SET updated_at = \$1, service_name = \$2, price = \$3 WHERE id = \$4`).
 		WithArgs(sqlmock.AnyArg(), "Netflix Premium", 699, subID).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
-	// Вызываем метод
 	err := s.repo.UpdateSubscription(s.ctx, subID, updateReq)
 
-	// Проверяем
 	assert.NoError(s.T(), err)
 	assert.NoError(s.T(), s.mock.ExpectationsWereMet())
 }
@@ -141,15 +131,12 @@ func (s *PostgresRepositoryTestSuite) TestUpdateSubscription() {
 func (s *PostgresRepositoryTestSuite) TestDeleteSubscription() {
 	subID := uuid.New()
 
-	// Ожидаем SQL запрос
 	s.mock.ExpectExec(`DELETE FROM subscriptions WHERE id = \$1`).
 		WithArgs(subID).
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
-	// Вызываем метод
 	err := s.repo.DeleteSubscription(s.ctx, subID)
 
-	// Проверяем
 	assert.NoError(s.T(), err)
 	assert.NoError(s.T(), s.mock.ExpectationsWereMet())
 }
@@ -199,7 +186,6 @@ func (s *PostgresRepositoryTestSuite) TestCalculateSummary() {
 	endDate := time.Date(2025, 12, 31, 0, 0, 0, 0, time.UTC)
 	userID := uuid.New()
 
-	// Ожидаем SQL запрос
 	rows := sqlmock.NewRows([]string{"total_amount", "count"}).
 		AddRow(1298, 2)
 
@@ -207,10 +193,8 @@ func (s *PostgresRepositoryTestSuite) TestCalculateSummary() {
 		WithArgs(startDate, endDate, userID).
 		WillReturnRows(rows)
 
-	// Вызываем метод
 	result, err := s.repo.CalculateSummary(s.ctx, startDate, endDate, &userID, nil)
 
-	// Проверяем
 	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), 1298, result.TotalAmount)
 	assert.Equal(s.T(), 2, result.Count)
